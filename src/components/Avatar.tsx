@@ -6,6 +6,5 @@ interface AvatarProps extends ImgHTMLAttributes<HTMLImageElement> {
 }
 
 export function Avatar({ hasBorder = true, ...props }: AvatarProps) {
-  console.log(props);
   return <img className={hasBorder ? styles.avatarWithBorder : styles.avatar} {...props} />;
 }
