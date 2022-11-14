@@ -1,39 +1,40 @@
+import { FormEvent, useState } from "react";
+
 import { format, formatDistanceToNow } from "date-fns";
 import ptBR from "date-fns/locale/pt-BR";
-import { useState } from "react";
 
 import { Avatar } from "./Avatar";
 import { Comment } from "./Comment";
 import styles from "./Post.module.css";
 
-interface Props {
-  author: {
-    avatar_url: string;
-    name: string;
-    role: string;
-  };
-  publishedAt: Date;
-  content: {
-    type: "link" | "paragraph";
-    content: string;
-  }[];
+interface Author {
+  avatar_url: string;
+  name: string;
+  role: string;
 }
 
-export function Post({ author, publishedAt, content }: Props) {
+interface Content {
+  type: "link" | "paragraph";
+  content: string;
+}
+
+interface PostProps {
+  author: Author;
+  publishedAt: Date;
+  content: Content[];
+}
+
+export function Post({ author, publishedAt, content }: PostProps) {
   const publishedDateFormatted = format(publishedAt, "dd 'de' LLLL 'às' HH:mm'h'", { locale: ptBR });
   const publishedDateRelativeToNow = formatDistanceToNow(publishedAt, { locale: ptBR, addSuffix: true });
 
   const [comments, setComments] = useState(["Post muito bacana, hein?!"]);
   const [newCommentText, setNewCommentText] = useState("");
 
-  function handleCreateNewComment(event: React.FormEvent) {
+  function handleCreateNewComment(event: FormEvent) {
     event.preventDefault();
     setComments((prevState) => [...prevState, newCommentText]);
     setNewCommentText("");
-  }
-
-  function handleNewCommentInvalid(event: any) {
-    event.target.setCustomValidity("Esse campo é obrigatório!");
   }
 
   function deleteComment(commentToDelete: string) {
@@ -50,7 +51,7 @@ export function Post({ author, publishedAt, content }: Props) {
     <article className={styles.post}>
       <header>
         <div className={styles.author}>
-          <Avatar src={author.avatar_url} />
+          <Avatar src={author.avatar_url} alt="" />
           <div className={styles.authorInfo}>
             <strong>{author.name}</strong>
             <span>{author.role}</span>
@@ -76,7 +77,7 @@ export function Post({ author, publishedAt, content }: Props) {
 
       <form onSubmit={handleCreateNewComment} className={styles.commentForm}>
         <strong>Deixe seu feedback</strong>
-        <textarea onInvalid={handleNewCommentInvalid} required onChange={(e) => setNewCommentText(e.target.value)} value={newCommentText} name="comment" placeholder="Deixe um comentário" />
+        <textarea required onChange={(e) => setNewCommentText(e.target.value)} value={newCommentText} name="comment" placeholder="Deixe um comentário" />
         <footer>
           <button type="submit" disabled={isNewCommentEmpty}>
             Publicar
